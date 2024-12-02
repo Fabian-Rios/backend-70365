@@ -4,31 +4,31 @@ import { generateId } from "../utils/collectionHandler.js";
 import { convertToBoolean } from "../utils/converter.js";
 import ErrorManager from "./ErrorManager.js";
 
-export default class IngredientManager {
+export default class ComponentsManager {
     #jsonFilename;
-    #ingredients;
+    #components;
 
     constructor() {
-        this.#jsonFilename = "ingredients.json";
+        this.#jsonFilename = "components.json";
     }
 
     // Busca un ingrediente por su ID
     async #findOneById(id) {
-        this.#ingredients = await this.getAll();
-        const ingredientFound = this.#ingredients.find((item) => item.id === Number(id));
+        this.#components = await this.getAll();
+        const componentsFound = this.#components.find((item) => item.id === Number(id));
 
-        if (!ingredientFound) {
+        if (!componentsFound) {
             throw new ErrorManager("ID no encontrado", 404);
         }
 
-        return ingredientFound;
+        return componentsFound;
     }
 
     // Obtiene una lista de ingredientes
     async getAll() {
         try {
-            this.#ingredients = await readJsonFile(paths.files, this.#jsonFilename);
-            return this.#ingredients;
+            this.#components = await readJsonFile(paths.files, this.#jsonFilename);
+            return this.#components;
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
@@ -37,8 +37,8 @@ export default class IngredientManager {
     // Obtiene un ingrediente específico por su ID
     async getOneById(id) {
         try {
-            const ingredientFound = await this.#findOneById(id);
-            return ingredientFound;
+            const componentsFound = await this.#findOneById(id);
+            return componentsFound;
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
@@ -57,7 +57,7 @@ export default class IngredientManager {
                 throw new ErrorManager("Falta el archivo de la imagen", 400);
             }
 
-            const ingredient = {
+            const component = {
                 id: generateId(await this.getAll()),
                 title,
                 status: convertToBoolean(status),
@@ -65,10 +65,10 @@ export default class IngredientManager {
                 thumbnail: file?.filename,
             };
 
-            this.#ingredients.push(ingredient);
-            await writeJsonFile(paths.files, this.#jsonFilename, this.#ingredients);
+            this.#components.push(component);
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#components);
 
-            return ingredient;
+            return component;
         } catch (error) {
             if (file?.filename) await deleteFile(paths.images, file.filename); // Elimina la imagen si ocurre un error
             throw new ErrorManager(error.message, error.code);
@@ -79,27 +79,27 @@ export default class IngredientManager {
     async updateOneById(id, data, file) {
         try {
             const { title, status, stock } = data;
-            const ingredientFound = await this.#findOneById(id);
+            const componentsFound = await this.#findOneById(id);
             const newThumbnail = file?.filename;
 
-            const ingredient = {
-                id: ingredientFound.id,
-                title: title || ingredientFound.title,
-                status: status ? convertToBoolean(status) : ingredientFound.status,
-                stock: stock ? Number(stock) : ingredientFound.stock,
-                thumbnail: newThumbnail || ingredientFound.thumbnail,
+            const component = {
+                id: componentsFound.id,
+                title: title || componentsFound.title,
+                status: status ? convertToBoolean(status) : componentsFound.status,
+                stock: stock ? Number(stock) : componentsFound.stock,
+                thumbnail: newThumbnail || componentsFound.thumbnail,
             };
 
-            const index = this.#ingredients.findIndex((item) => item.id === Number(id));
-            this.#ingredients[index] = ingredient;
-            await writeJsonFile(paths.files, this.#jsonFilename, this.#ingredients);
+            const index = this.#components.findIndex((item) => item.id === Number(id));
+            this.#components[index] = component;
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#components);
 
             // Elimina la imagen anterior si es distinta de la nueva
-            if (file?.filename && newThumbnail !== ingredientFound.thumbnail) {
-                await deleteFile(paths.images, ingredientFound.thumbnail);
+            if (file?.filename && newThumbnail !== componentsFound.thumbnail) {
+                await deleteFile(paths.images, componentsFound.thumbnail);
             }
 
-            return ingredient;
+            return component;
         } catch (error) {
             if (file?.filename) await deleteFile(paths.images, file.filename); // Elimina la imagen si ocurre un error
             throw new ErrorManager(error.message, error.code);
@@ -109,16 +109,16 @@ export default class IngredientManager {
     // Elimina un ingrediente en específico
     async deleteOneById (id) {
         try {
-            const ingredientFound = await this.#findOneById(id);
+            const componentsFound = await this.#findOneById(id);
 
             // Si tiene thumbnail definido, entonces, elimina la imagen del ingrediente
-            if (ingredientFound.thumbnail) {
-                await deleteFile(paths.images, ingredientFound.thumbnail);
+            if (this.componentsFound.thumbnail) {
+                await deleteFile(paths.images, this.componentsFound.thumbnail);
             }
 
-            const index = this.#ingredients.findIndex((item) => item.id === Number(id));
-            this.#ingredients.splice(index, 1);
-            await writeJsonFile(paths.files, this.#jsonFilename, this.#ingredients);
+            const index = this.#components.findIndex((item) => item.id === Number(id));
+            this.#components.splice(index, 1);
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#components);
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }

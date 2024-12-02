@@ -1,8 +1,8 @@
 import express from "express";
 
 // Importación de enrutadores
-import routerRecipes from "./routes/recipe.router.js";
-import routerIngredients from "./routes/ingredient.router.js";
+import routerHardware from "./routes/hardware.router.js";
+import routerComponents from "./routes/components.router.js";
 
 // Se crea una instancia de la aplicación Express
 const app = express();
@@ -21,8 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Declaración de rutas
-app.use("/api/recipes", routerRecipes);
-app.use("/api/ingredients", routerIngredients);
+app.use("/api/hardware", routerHardware);
+app.use("/api/components", routerComponents);
 
 // Se levanta el servidor oyendo en el puerto definido
 app.listen(PORT, () => {

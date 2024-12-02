@@ -1,0 +1,23 @@
+[
+	{
+		"id": 1,
+		"title": "Motherboards",
+		"status": false,
+		"stock": 250,
+		"thumbnail": ""
+	},
+	{
+		"id": 2,
+		"title": "Microprocesadores",
+		"status": true,
+		"stock": 10,
+		"thumbnail": ""
+	},
+	{
+		"id": 3,
+		"title": "Tarjetas Graficas",
+		"status": true,
+		"stock": 15,
+		"thumbnail": ""
+	}
+]
