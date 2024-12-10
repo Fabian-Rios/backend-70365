@@ -12,7 +12,7 @@ export default class ComponentsManager {
         this.#jsonFilename = "components.json";
     }
 
-    // Busca un ingrediente por su ID
+    // Busca un componente por su ID
     async #findOneById(id) {
         this.#components = await this.getAll();
         const componentsFound = this.#components.find((item) => item.id === Number(id));
@@ -24,7 +24,7 @@ export default class ComponentsManager {
         return componentsFound;
     }
 
-    // Obtiene una lista de ingredientes
+    // Obtiene una lista de componentes
     async getAll() {
         try {
             this.#components = await readJsonFile(paths.files, this.#jsonFilename);
@@ -34,7 +34,7 @@ export default class ComponentsManager {
         }
     }
 
-    // Obtiene un ingrediente específico por su ID
+    // Obtiene un componente específico por su ID
     async getOneById(id) {
         try {
             const componentsFound = await this.#findOneById(id);
@@ -44,7 +44,7 @@ export default class ComponentsManager {
         }
     }
 
-    // Inserta un ingrediente
+    // Inserta un componente
     async insertOne(data, file) {
         try {
             const { title, status, stock } = data;
@@ -53,16 +53,12 @@ export default class ComponentsManager {
                 throw new ErrorManager("Faltan datos obligatorios", 400);
             }
 
-            if (!file?.filename) {
-                throw new ErrorManager("Falta el archivo de la imagen", 400);
-            }
-
             const component = {
                 id: generateId(await this.getAll()),
                 title,
                 status: convertToBoolean(status),
                 stock: Number(stock),
-                thumbnail: file?.filename,
+                thumbnail: file?.filename ?? null
             };
 
             this.#components.push(component);
@@ -75,7 +71,7 @@ export default class ComponentsManager {
         }
     }
 
-    // Actualiza un ingrediente en específico
+    // Actualiza un componente en específico
     async updateOneById(id, data, file) {
         try {
             const { title, status, stock } = data;
@@ -106,12 +102,12 @@ export default class ComponentsManager {
         }
     }
 
-    // Elimina un ingrediente en específico
+    // Elimina un componente en específico
     async deleteOneById (id) {
         try {
             const componentsFound = await this.#findOneById(id);
 
-            // Si tiene thumbnail definido, entonces, elimina la imagen del ingrediente
+            // Si tiene thumbnail definido, entonces, elimina la imagen del componente
             if (this.componentsFound.thumbnail) {
                 await deleteFile(paths.images, this.componentsFound.thumbnail);
             }

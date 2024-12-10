@@ -1,13 +1,13 @@
 [
 	{
 		"id": 1,
-		"ingredients": [
+		"components": [
 			{
-				"ingredient": 1,
+				"component": 1,
 				"quantity": 1
 			},
 			{
-				"ingredient": 2,
+				"component": 2,
 				"quantity": 3
 			}
 		]

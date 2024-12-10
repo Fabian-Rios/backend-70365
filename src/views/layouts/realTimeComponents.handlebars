@@ -1,0 +1,41 @@
+<header>
+    <h1>INICIO - Componentes en Tiempo Real</h1>
+</header>
+
+<main>
+    <section>
+        <h3>Componentes</h3>
+        {{!-- Uso de nomenclatura BEM (B de bloque, E de elemento y M de modificador)--}}
+        <div class="components">
+            <div class="components__list">
+                <ul class="components__list__item" id="components-list"></ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Formulario de Componentes</h3>
+        <form class="components__form" id="components-form">
+            <input type="text" name="title" placeholder="Nombre del Componente">
+            <div>¿Está activo?<input type="checkbox" name="status"></div>
+            <input type="number" name="stock" placeholder="Stock del Componente">
+
+            <input type="submit" value="Guardar" style="width: 100%">
+        </form>
+    </section>
+
+    <section>
+        <h3>Eliminación de Componentes</h3>
+        <div class="components__delete">
+            <input type="number" class="components__delete__input" id="input-component-id"
+                placeholder="ID del Componente">
+            <button id="btn-delete-component">Eliminar</button>
+        </div>
+    </section>
+
+    <p class="error-message" id="error-message"></p>
+</main>
+
+{{!-- El script de socket.io debe estar antes que home.js --}}
+<script src="/socket.io/socket.io.js"></script>
+<script src="/src/public/js/components.socket.js"></script>

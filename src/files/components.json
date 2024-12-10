@@ -4,20 +4,20 @@
 		"title": "Motherboards",
 		"status": false,
 		"stock": 250,
-		"thumbnail": ""
+		"thumbnail": "/placa madre.png"
 	},
 	{
 		"id": 2,
 		"title": "Microprocesadores",
 		"status": true,
 		"stock": 10,
-		"thumbnail": ""
+		"thumbnail": "/inte i3.jpg"
 	},
 	{
 		"id": 3,
 		"title": "Tarjetas Graficas",
 		"status": true,
 		"stock": 15,
-		"thumbnail": ""
+		"thumbnail": "/placa de video gigabyte rtx 4060 ti.jpg"
 	}
 ]
