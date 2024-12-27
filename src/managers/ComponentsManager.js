@@ -10,9 +10,9 @@ export default class ComponentsManager {
 
     constructor() {
         this.#jsonFilename = "components.json";
+        this.#components = [];
     }
 
-    // Busca un componente por su ID
     async #findOneById(id) {
         this.#components = await this.getAll();
         const componentsFound = this.#components.find((item) => item.id === Number(id));
@@ -24,7 +24,6 @@ export default class ComponentsManager {
         return componentsFound;
     }
 
-    // Obtiene una lista de componentes
     async getAll() {
         try {
             this.#components = await readJsonFile(paths.files, this.#jsonFilename);
@@ -34,7 +33,6 @@ export default class ComponentsManager {
         }
     }
 
-    // Obtiene un componente específico por su ID
     async getOneById(id) {
         try {
             const componentsFound = await this.#findOneById(id);
@@ -44,12 +42,11 @@ export default class ComponentsManager {
         }
     }
 
-    // Inserta un componente
     async insertOne(data, file) {
         try {
             const { title, status, stock } = data;
 
-            if (!title || !status || !stock ) {
+            if (!title || !status || !stock) {
                 throw new ErrorManager("Faltan datos obligatorios", 400);
             }
 
@@ -66,12 +63,11 @@ export default class ComponentsManager {
 
             return component;
         } catch (error) {
-            if (file?.filename) await deleteFile(paths.images, file.filename); // Elimina la imagen si ocurre un error
+            if (file?.filename) await deleteFile(paths.images, file.filename);
             throw new ErrorManager(error.message, error.code);
         }
     }
 
-    // Actualiza un componente en específico
     async updateOneById(id, data, file) {
         try {
             const { title, status, stock } = data;
@@ -90,26 +86,23 @@ export default class ComponentsManager {
             this.#components[index] = component;
             await writeJsonFile(paths.files, this.#jsonFilename, this.#components);
 
-            // Elimina la imagen anterior si es distinta de la nueva
             if (file?.filename && newThumbnail !== componentsFound.thumbnail) {
                 await deleteFile(paths.images, componentsFound.thumbnail);
             }
 
             return component;
         } catch (error) {
-            if (file?.filename) await deleteFile(paths.images, file.filename); // Elimina la imagen si ocurre un error
+            if (file?.filename) await deleteFile(paths.images, file.filename);
             throw new ErrorManager(error.message, error.code);
         }
     }
 
-    // Elimina un componente en específico
-    async deleteOneById (id) {
+    async deleteOneById(id) {
         try {
             const componentsFound = await this.#findOneById(id);
 
-            // Si tiene thumbnail definido, entonces, elimina la imagen del componente
-            if (this.componentsFound.thumbnail) {
-                await deleteFile(paths.images, this.componentsFound.thumbnail);
+            if (componentsFound.thumbnail) {
+                await deleteFile(paths.images, componentsFound.thumbnail);
             }
 
             const index = this.#components.findIndex((item) => item.id === Number(id));

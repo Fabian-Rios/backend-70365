@@ -4,7 +4,7 @@ import HardwareManager from "../managers/HardwareManager.js";
 const router = Router();
 const hardwareManager = new HardwareManager();
 
-// Ruta para obtener las recetas
+
 router.get("/", async (req, res) => {
     try {
         const hardwares = await hardwareManager.getAll(req.query);
@@ -14,7 +14,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Ruta para obtener una receta en específico por su ID
 router.get("/:id", async (req, res) => {
     try {
         const hardware = await hardwareManager.getOneById(req.params.id);
@@ -24,7 +23,6 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// Ruta para crear una receta
 router.post("/", async (req, res) => {
     try {
         const hardware = await hardwareManager.insertOne(req.body);
@@ -34,7 +32,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-// Ruta para incrementar en una unidad o agregar un ingrediente específico en una receta por su ID
 router.post("/:cid/components/:pid", async (req, res) => {
     try {
         const { cid, pid } = req.params;

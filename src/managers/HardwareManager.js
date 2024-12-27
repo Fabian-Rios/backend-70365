@@ -9,12 +9,12 @@ export default class HardwareManager {
 
     constructor() {
         this.#jsonFilename = "hardwares.json";
+        this.#hardwares = []; // Asegúrate de inicializar la propiedad
     }
 
-    // Busca un receta por su ID
     async #findOneById(id) {
-        this.hardware = await this.getAll();
-        const hardwareFound = this.hardware.find((item) => item.id === Number(id));
+        this.#hardwares = await this.getAll();
+        const hardwareFound = this.#hardwares.find((item) => item.id === Number(id));
 
         if (!hardwareFound) {
             throw new ErrorManager("ID no encontrado", 404);
@@ -23,17 +23,15 @@ export default class HardwareManager {
         return hardwareFound;
     }
 
-    // Obtiene una lista de recetas
     async getAll() {
         try {
-            this.hardware = await readJsonFile(paths.files, this.#jsonFilename);
-            return this.hardware;
+            this.#hardwares = await readJsonFile(paths.files, this.#jsonFilename);
+            return this.#hardwares;
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
     }
 
-    // Obtiene un receta específica por su ID
     async getOneById(id) {
         try {
             const hardwareFound = await this.#findOneById(id);
@@ -43,7 +41,6 @@ export default class HardwareManager {
         }
     }
 
-    // Inserta un receta
     async insertOne(data) {
         try {
             const components = data?.components?.map((item) => {
@@ -52,11 +49,11 @@ export default class HardwareManager {
 
             const hardware = {
                 id: generateId(await this.getAll()),
-                components: components ?? [],
+                components: components && components.length > 0 ? components : [],
             };
 
-            this.hardware.push(hardware);
-            await writeJsonFile(paths.files, this.#jsonFilename, this.hardware);
+            this.#hardwares.push(hardware);
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#hardwares);
 
             return hardware;
         } catch (error) {
@@ -64,7 +61,6 @@ export default class HardwareManager {
         }
     }
 
-    // Agrega un ingrediente a una receta o incrementa la cantidad de un ingrediente existente
     addOneIngredient = async (id, componentId) => {
         try {
             const hardwareFound = await this.#findOneById(id);
@@ -76,9 +72,9 @@ export default class HardwareManager {
                 hardwareFound.components.push({ component: Number(componentId), quantity: 1 });
             }
 
-            const index = this.hardware.findIndex((item) => item.id === Number(id));
-            this.hardware[index] = hardwareFound;
-            await writeJsonFile(paths.files, this.#jsonFilename, this.hardware);
+            const index = this.#hardwares.findIndex((item) => item.id === Number(id));
+            this.#hardwares[index] = hardwareFound;
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#hardwares);
 
             return hardwareFound;
         } catch (error) {

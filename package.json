@@ -1,11 +1,11 @@
 {
-  "name": "backend-trabajo",
+  "name": "backend-tranajo",
   "version": "1.0.0",
-  "main": "/src/app.js",
+  "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "node --no-warnings ./src/app.js",
-    "dev": "nodemon ./src/app.js",
+    "start": "node --no-warnings src/app.js",
+    "dev": "nodemon src/app.js",
     "stop-linux": "killall -9 node",
     "stop-windows": "taskkill /F /IM node.exe",
     "lint": "eslint ./src --fix"
@@ -15,7 +15,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "backend-trabajo": "file:",
     "backend-tranajo": "file:",
     "express": "^4.21.1",
     "express-handlebars": "^8.0.1",
