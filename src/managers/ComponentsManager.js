@@ -1,4 +1,4 @@
-import paths from "../utils/paths.js";
+import paths from "../utils/paths.js"; 
 import { readJsonFile, writeJsonFile, deleteFile } from "../utils/fileHandler.js";
 import { generateId } from "../utils/collectionHandler.js";
 import { convertToBoolean } from "../utils/converter.js";
@@ -108,6 +108,20 @@ export default class ComponentsManager {
             const index = this.#components.findIndex((item) => item.id === Number(id));
             this.#components.splice(index, 1);
             await writeJsonFile(paths.files, this.#jsonFilename, this.#components);
+        } catch (error) {
+            throw new ErrorManager(error.message, error.code);
+        }
+    }
+
+    async getTotalComponents(query = "") {
+        try {
+            const allComponents = await this.getAll();
+            const filteredComponents = query
+                ? allComponents.filter((component) =>
+                    component.title.toLowerCase().includes(query.toLowerCase())
+                )
+                : allComponents;
+            return filteredComponents.length;
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }

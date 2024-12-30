@@ -7,39 +7,28 @@ const componentsManager = new ComponentsManager();
 
 router.get("/", async (req, res) => {
     try {
-        const { limit = 10, page = 1, sort = "asc", query = "" } = req.query;
+        const { limit = 10, page = 1, sort = "", query = "" } = req.query;
 
-        const limitNum = parseInt(limit);
-        const pageNum = parseInt(page);
+        const { products, totalPages, prevPage, nextPage, hasPrevPage, hasNextPage, prevLink, nextLink } = 
+            await componentsManager.getAll({
+                limit: parseInt(limit),
+                page: parseInt(page),
+                sort,
+                query,
+            });
 
-        const components = await componentsManager.getAll({
-            limit: limitNum,
-            page: pageNum,
-            sort,
-            query
-        });
-
-        const totalComponents = await componentsManager.getTotalComponents(query);
-        const totalPages = Math.ceil(totalComponents / limitNum);
-        const prevPage = pageNum > 1 ? pageNum - 1 : null;
-        const nextPage = pageNum < totalPages ? pageNum + 1 : null;
-        const hasPrevPage = prevPage !== null;
-        const hasNextPage = nextPage !== null;
-
-        const response = {
+        res.status(200).json({
             status: "success",
-            payload: components,
+            payload: products,
             totalPages,
             prevPage,
             nextPage,
-            page: pageNum,
+            page: parseInt(page),
             hasPrevPage,
             hasNextPage,
-            prevLink: hasPrevPage ? `/api/components?page=${prevPage}&limit=${limitNum}&sort=${sort}&query=${query}` : null,
-            nextLink: hasNextPage ? `/api/components?page=${nextPage}&limit=${limitNum}&sort=${sort}&query=${query}` : null
-        };
-
-        res.json(response);
+            prevLink,
+            nextLink,
+        });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });
     }

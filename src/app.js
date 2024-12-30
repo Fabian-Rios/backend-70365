@@ -12,7 +12,6 @@ const PORT = 8080;
 
 app.use("/api/public", express.static("./src/public"));
 
-
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());

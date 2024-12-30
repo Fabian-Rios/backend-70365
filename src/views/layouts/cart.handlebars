@@ -1,0 +1,85 @@
+<header>
+    <h1>Detalle del Carrito</h1>
+</header>
+
+<main>
+    <section>
+        <h3>Productos en el Carrito</h3>
+        {{#if cart.products.length}}
+            <table class="cart-products-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each cart.products}}
+                        <tr>
+                            <td>{{this.product._id}}</td>
+                            <td>{{this.product.title}}</td>
+                            <td>{{this.quantity}}</td>
+                            <td>${{this.product.price}}</td>
+                            <td>${{multiply this.quantity this.product.price}}</td>
+                            <td>
+                                <button class="btn-remove-product" data-product-id="{{this.product._id}}">Eliminar</button>
+                                <button class="btn-update-quantity" data-product-id="{{this.product._id}}">Actualizar</button>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <div class="cart-summary">
+                <h4>Resumen del Carrito</h4>
+                <p><strong>Total de Productos:</strong> {{cart.products.length}}</p>
+                <p><strong>Total a Pagar:</strong> ${{calculateTotal cart.products}}</p>
+            </div>
+
+            <button id="btn-clear-cart">Vaciar Carrito</button>
+        {{else}}
+            <p>No hay productos en este carrito.</p>
+        {{/if}}
+    </section>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".btn-remove-product").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+                const productId = btn.getAttribute("data-product-id");
+                const cartId = "{{cart._id}}";
+                await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                    method: "DELETE",
+                });
+                location.reload();
+            });
+        });
+
+        document.querySelectorAll(".btn-update-quantity").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+                const productId = btn.getAttribute("data-product-id");
+                const cartId = "{{cart._id}}";
+                const quantity = prompt("Ingrese la nueva cantidad:");
+                if (quantity) {
+                    await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ quantity: Number(quantity) }),
+                    });
+                    location.reload();
+                }
+            });
+        });
+
+        document.getElementById("btn-clear-cart").addEventListener("click", async () => {
+            const cartId = "{{cart._id}}";
+            await fetch(`/api/carts/${cartId}`, { method: "DELETE" });
+            location.reload();
+        });
+    });
+</script>
