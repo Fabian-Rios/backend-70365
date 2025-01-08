@@ -11,5 +11,14 @@
 				"quantity": 3
 			}
 		]
+	},
+	{
+		"id": 2,
+		"components": [
+			{
+				"component": 102,
+				"quantity": 1
+			}
+		]
 	}
 ]

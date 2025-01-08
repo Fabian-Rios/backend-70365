@@ -18,7 +18,7 @@ export default class ComponentsManager {
         const componentsFound = this.#components.find((item) => item.id === Number(id));
 
         if (!componentsFound) {
-            throw new ErrorManager("ID no encontrado", 404);
+            throw new ErrorManager("id no encontrado", 404);
         }
 
         return componentsFound;

@@ -19,5 +19,12 @@
 		"status": true,
 		"stock": 15,
 		"thumbnail": "/placa de video gigabyte rtx 4060 ti.jpg"
+	},
+	{
+		"id": 4,
+		"title": "New Component",
+		"status": true,
+		"stock": 20,
+		"thumbnail": null
 	}
 ]

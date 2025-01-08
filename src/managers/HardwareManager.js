@@ -14,13 +14,13 @@ export default class HardwareManager {
 
     async #findOneById(id) {
         if (!Number.isInteger(Number(id))) {
-            throw new ErrorManager(`El ID debe ser un número válido: ${id}`, 400);
+            throw new ErrorManager(`el ID debe ser un número válido: ${id}`, 400);
         }
         this.#hardwares = await this.getAll();
         const hardwareFound = this.#hardwares.find((item) => item.id === Number(id));
 
         if (!hardwareFound) {
-            throw new ErrorManager(`Hardware con ID ${id} no encontrado`, 404);
+            throw new ErrorManager(`hardware con ID ${id} no encontrado`, 404);
         }
 
         return hardwareFound;
@@ -31,7 +31,7 @@ export default class HardwareManager {
             this.#hardwares = await readJsonFile(paths.files, this.#jsonFilename);
             return this.#hardwares;
         } catch (error) {
-            throw new ErrorManager(`Error al leer los hardwares: ${error.message}`, error.code || 500);
+            throw new ErrorManager(`error al leer los hardwares: ${error.message}`, error.code || 500);
         }
     }
 
@@ -39,14 +39,14 @@ export default class HardwareManager {
         try {
             return await this.#findOneById(id);
         } catch (error) {
-            throw new ErrorManager(`Error al obtener hardware con ID ${id}: ${error.message}`, error.code || 500);
+            throw new ErrorManager(`error al obtener hardware con ID ${id}: ${error.message}`, error.code || 500);
         }
     }
 
     async insertOne(data) {
         try {
             if (!data || !Array.isArray(data.components)) {
-                throw new ErrorManager("Los componentes deben ser un array válido", 400);
+                throw new ErrorManager("los componentes deben ser un array válido", 400);
             }
 
             const components = data.components.map((item) => ({
@@ -64,7 +64,7 @@ export default class HardwareManager {
 
             return hardware;
         } catch (error) {
-            throw new ErrorManager(`Error al insertar hardware: ${error.message}`, error.code || 500);
+            throw new ErrorManager(`error al insertar hardware: ${error.message}`, error.code || 500);
         }
     }
 
@@ -89,7 +89,71 @@ export default class HardwareManager {
 
             return hardwareFound;
         } catch (error) {
-            throw new ErrorManager(`Error al agregar componente: ${error.message}`, error.code || 500);
+            throw new ErrorManager(`error al agregar componente: ${error.message}`, error.code || 500);
         }
     }
+
+
+    async deleteComponentFromCart(id, componentId) {
+        try {
+            const hardwareFound = await this.#findOneById(id);
+            const componentIndex = hardwareFound.components.findIndex((item) => item.component === Number(componentId));
+    
+            if (componentIndex < 0) {
+                throw new ErrorManager(`componente con ID ${componentId} no encontrado en el carrito`, 404);
+            }
+    
+            hardwareFound.components.splice(componentIndex, 1);
+    
+            const index = this.#hardwares.findIndex((item) => item.id === Number(id));
+            this.#hardwares[index] = hardwareFound;
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#hardwares);
+    
+            return hardwareFound;
+        } catch (error) {
+            throw new ErrorManager(`error al eliminar componente: ${error.message}`, error.code || 500);
+        }
+    }
+
+    async clearCart(id) {
+        try {
+            const hardwareFound = await this.#findOneById(id);
+    
+            hardwareFound.components = [];
+    
+            const index = this.#hardwares.findIndex((item) => item.id === Number(id));
+            this.#hardwares[index] = hardwareFound;
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#hardwares);
+    
+            return hardwareFound;
+        } catch (error) {
+            throw new ErrorManager(`error al vaciar carrito: ${error.message}`, error.code || 500);
+        }
+    }
+
+    async updateProductQuantity(id, componentId, quantity) {
+        try {
+            if (!Number.isInteger(quantity) || quantity < 0) {
+                throw new ErrorManager("la cantidad debe ser un número entero positivo", 400);
+            }
+    
+            const hardwareFound = await this.#findOneById(id);
+            const componentIndex = hardwareFound.components.findIndex((item) => item.component === Number(componentId));
+    
+            if (componentIndex < 0) {
+                throw new ErrorManager(`componente con ID ${componentId} no encontrado en el carrito`, 404);
+            }
+    
+            hardwareFound.components[componentIndex].quantity = quantity;
+    
+            const index = this.#hardwares.findIndex((item) => item.id === Number(id));
+            this.#hardwares[index] = hardwareFound;
+            await writeJsonFile(paths.files, this.#jsonFilename, this.#hardwares);
+    
+            return hardwareFound;
+        } catch (error) {
+            throw new ErrorManager(`error al actualizar la cantidad: ${error.message}`, error.code || 500);
+        }
+    }
+    
 }

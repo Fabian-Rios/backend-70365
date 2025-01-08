@@ -70,7 +70,7 @@ router.post("/", uploader.single("file"), async (req, res) => {
 router.put("/:id", uploader.single("file"), async (req, res) => {
     try {
         if (!req.body.title && !req.body.stock) {
-            return res.status(400).json({ status: "error", message: "No se proporcionaron datos para actualizar." });
+            return res.status(400).json({ status: "error", message: "no se proporcionaron datos para actualizar." });
         }
 
         const component = await componentsManager.updateOneById(req.params.id, req.body, req.file);

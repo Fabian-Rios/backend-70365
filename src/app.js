@@ -6,6 +6,7 @@ import routerHardware from "./routes/hardware.router.js";
 import routerComponents from "./routes/components.router.js";
 import routerViewHome from "./routes/home.view.router.js";
 
+
 const app = express();
 
 const PORT = 8080;
@@ -20,6 +21,7 @@ configHandlebars(app);
 
 app.use("/api/hardware", routerHardware);
 app.use("/api/components", routerComponents);
+
 app.use("/", routerViewHome);
 
 app.use("*", (req, res) => {
