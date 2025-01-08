@@ -1,9 +1,8 @@
 import { Router } from "express";
-import HardwareManager from "../managers/HardwareManager.js";
+import CartsManager from "../managers/CartsManager.js";
 
 const router = Router();
-const hardwareManager = new HardwareManager();
-
+const cartsManager = new CartsManager();
 
 router.get("/", async (req, res) => {
     try {
@@ -12,15 +11,15 @@ router.get("/", async (req, res) => {
         const limitNum = parseInt(limit);
         const pageNum = parseInt(page);
 
-        const hardwares = await hardwareManager.getAll({
+        const carts = await cartsManager.getAll({
             limit: limitNum,
             page: pageNum,
             sort,
             query
         });
 
-        const totalHardwares = await hardwareManager.getTotalHardwares(query);
-        const totalPages = Math.ceil(totalHardwares / limitNum);
+        const totalCarts = await cartsManager.getTotalCarts(query);
+        const totalPages = Math.ceil(totalCarts / limitNum);
         const prevPage = pageNum > 1 ? pageNum - 1 : null;
         const nextPage = pageNum < totalPages ? pageNum + 1 : null;
         const hasPrevPage = prevPage !== null;
@@ -28,15 +27,15 @@ router.get("/", async (req, res) => {
 
         const response = {
             status: "success",
-            payload: hardwares,
+            payload: carts,
             totalPages,
             prevPage,
             nextPage,
             page: pageNum,
             hasPrevPage,
             hasNextPage,
-            prevLink: hasPrevPage ? `/api/hardwares?page=${prevPage}&limit=${limitNum}&sort=${sort}&query=${query}` : null,
-            nextLink: hasNextPage ? `/api/hardwares?page=${nextPage}&limit=${limitNum}&sort=${sort}&query=${query}` : null
+            prevLink: hasPrevPage ? `/api/carts?page=${prevPage}&limit=${limitNum}&sort=${sort}&query=${query}` : null,
+            nextLink: hasNextPage ? `/api/carts?page=${nextPage}&limit=${limitNum}&sort=${sort}&query=${query}` : null
         };
 
         res.json(response);
@@ -45,49 +44,48 @@ router.get("/", async (req, res) => {
     }
 });
 
-
 router.get("/:id", async (req, res) => {
     try {
-        const hardware = await hardwareManager.getOneById(req.params.id);
-        res.status(200).json({ status: "success", payload: hardware });
+        const cart = await cartsManager.getOneById(req.params.id);
+        res.status(200).json({ status: "success", payload: cart });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });
     }
 });
-
 
 router.post("/", async (req, res) => {
     try {
-        if (!req.body.components || !Array.isArray(req.body.components)) {
-            return res.status(400).json({ status: "error", message: "Se requieren componentes válidos." });
+        if (!req.body.products || !Array.isArray(req.body.products)) {
+            return res.status(400).json({ status: "error", message: "Se requieren productos válidos." });
         }
 
-        const hardware = await hardwareManager.insertOne(req.body);
-        res.status(201).json({ status: "success", payload: hardware });
+        const cart = await cartsManager.insertOne(req.body);
+        res.status(201).json({ status: "success", payload: cart });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });
     }
 });
 
-
-router.post("/:cid/components/:pid", async (req, res) => {
+router.post("/:cartId/products/:productId", async (req, res) => {
     try {
-        const { cid, pid } = req.params;
+        const cartId = Number(req.params.cartId); 
+        const productId = Number(req.params.productId); 
         const { quantity } = req.body;
 
-        if (quantity <= 0) {
-            return res.status(400).json({ status: "error", message: "La cantidad debe ser mayor a 0." });
+        if (!quantity || quantity <= 0) {
+            return res.status(400).json({ status: "error", message: "Cantidad inválida." });
         }
 
-        const hardware = await hardwareManager.addOneIngredient(cid, pid, quantity || 1);
-        res.status(200).json({ status: "success", payload: hardware });
+        const updatedCart = await cartsManager.addProductToCart(cartId, productId, quantity);
+        res.status(200).json({ status: "success", payload: updatedCart });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });
     }
 });
 
 
-router.put("/:cid/components/:pid", async (req, res) => {
+
+router.put("/:cid/products/:pid", async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const { quantity } = req.body;
@@ -96,19 +94,19 @@ router.put("/:cid/components/:pid", async (req, res) => {
             return res.status(400).json({ status: "error", message: "Cantidad inválida." });
         }
 
-        const updatedCart = await hardwareManager.updateProductQuantity(cid, pid, quantity);
+        const updatedCart = await cartsManager.updateProductQuantity(cid, pid, quantity);
         res.status(200).json({ status: "success", payload: updatedCart });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });
     }
 });
 
-
-router.delete("/:cid/components/:pid", async (req, res) => {
+router.delete("/:cid/products/:pid", async (req, res) => {
     try {
         const { cid, pid } = req.params;
-        const hardware = await hardwareManager.deleteComponentFromCart(cid, pid);
-        res.status(200).json({ status: "success", payload: hardware });
+
+        const updatedCart = await cartsManager.removeProductFromCart(cid, pid);
+        res.status(200).json({ status: "success", payload: updatedCart });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });
     }
@@ -118,7 +116,7 @@ router.delete("/:cid/components/:pid", async (req, res) => {
 router.delete("/:cid", async (req, res) => {
     try {
         const { cid } = req.params;
-        const clearedCart = await hardwareManager.clearCart(cid);
+        const clearedCart = await cartsManager.clearCart(cid);
         res.status(200).json({ status: "success", payload: clearedCart });
     } catch (error) {
         res.status(error.code || 500).json({ status: "error", message: error.message });

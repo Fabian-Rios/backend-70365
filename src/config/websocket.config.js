@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
-import ComponentManager from "../managers/ComponentsManager.js";
+import ProductsManager from "../managers/ProductsManager.js";
 
-const componentManager = new ComponentManager();
+const productsManager = new ProductsManager();
 
 export const config = (httpServer) => {
     const socketServer = new Server(httpServer);
@@ -9,31 +9,31 @@ export const config = (httpServer) => {
     socketServer.on("connection", async (socket) => {
         console.log("Conexión establecida", socket.id);
 
-        const components = await componentManager.getAll();
-        socket.emit("components-list", { components }); 
+        const products = await productsManager.getAll();
+        socket.emit("products-list", { products }); 
 
-        socket.on("insert-component", async (data) => {
+        socket.on("insert-product", async (data) => {
             try {
-                await componentManager.insertOne(data);
-                const updatedComponents = await componentManager.getAll();
-                socketServer.emit("components-list", { components: updatedComponents });
+                await productsManager.insertOne(data);
+                const updatedProducts = await productsManager.getAll();
+                socketServer.emit("products-list", { products: updatedProducts });
             } catch (error) {
                 socketServer.emit("error-message", { message: error.message });
             }
         });
 
-        socket.on("delete-component", async (data) => {
+        socket.on("delete-product", async (data) => {
             try {
-                await componentManager.deleteOneById(Number(data.id));
-                const updatedComponents = await componentManager.getAll();
-                socketServer.emit("components-list", { components: updatedComponents });
+                await productsManager.deleteOneById(Number(data.id));
+                const updatedProducts = await productsManager.getAll();
+                socketServer.emit("products-list", { products: updatedProducts });
             } catch (error) {
                 socketServer.emit("error-message", { message: error.message });
             }
         });
 
         socket.on("disconnect", () => {
-            log("info", `Cliente desconectado: ${socket.id}`);
+            console.log(`Cliente desconectado: ${socket.id}`);
         });
     });
 };

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import ComponentsManager from "../managers/ComponentsManager.js";
+import ProductsManager from "../managers/ProductsManager.js";
 
 const router = Router();
-const componentsManager = new ComponentsManager();
+const productsManager = new ProductsManager();
 
 router.get("/", async (req, res, next) => {
     try {
@@ -12,22 +12,22 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.get("/realTimeComponents", async (req, res, next) => {
+router.get("/realTimeProducts", async (req, res, next) => {
     try {
-        res.render("realTimeComponents", { title: "Inicio" });
+        res.render("realTimeProducts", { title: "Inicio" });
     } catch (error) {
         next(error);
     }
 });
 
-router.get("/components", async (req, res, next) => {
+router.get("/products", async (req, res, next) => {
     try {
         const { limit = 10, page = 1, sort, query } = req.query;
 
-        const result = await componentsManager.getAllPaginated({ limit, page, sort, query });
+        const result = await productsManager.getAllPaginated({ limit, page, sort, query });
 
         const {
-            docs: components,
+            docs: products,
             totalPages,
             prevPage,
             nextPage,
@@ -36,17 +36,17 @@ router.get("/components", async (req, res, next) => {
             hasNextPage,
         } = result;
 
-        res.render("components", {
-            title: "Componentes",
-            components,
+        res.render("products", {
+            title: "Productos",
+            products,
             totalPages,
             prevPage,
             nextPage,
             currentPage,
             hasPrevPage,
             hasNextPage,
-            prevLink: hasPrevPage ? `/components?page=${prevPage}&limit=${limit}` : null,
-            nextLink: hasNextPage ? `/components?page=${nextPage}&limit=${limit}` : null,
+            prevLink: hasPrevPage ? `/products?page=${prevPage}&limit=${limit}` : null,
+            nextLink: hasNextPage ? `/products?page=${nextPage}&limit=${limit}` : null,
         });
     } catch (error) {
         next(error);
